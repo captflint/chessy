@@ -1,16 +1,22 @@
 files = "abcdefgh"
 ranks = "87654321"
-renderorder = []
-
+whiteorder = []
 for number in ranks:
     for letter in files:
-        renderorder.append(letter + number)
+        whiteorder.append(letter + number)
+
+blackorder = []
+for square in whiteorder:
+    blackorder.append(square)
+blackorder.reverse()
+
+flipboard = False
 
 lightsquares = []
 rowcounter = 0
 rowfliper = True
 
-for square in renderorder:
+for square in whiteorder:
     if rowfliper:
         if rowcounter % 2 == 0:
             lightsquares.append(square)
@@ -22,6 +28,10 @@ for square in renderorder:
         rowfliper = not rowfliper
 
 def printboard(piecelist):
+    if flipboard:
+        renderorder = blackorder
+    else:
+        renderorder = whiteorder
     rankstr = ""
     for square in renderorder:
         emptysquare = True
