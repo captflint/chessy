@@ -14,6 +14,7 @@ class Piece:
         self.color = color
         self.symbol = '?'
         self.kind = 'undefined'
+        self.captured = False
 
     def location(self):
         square = ""
@@ -21,9 +22,9 @@ class Piece:
         square += str(self.Rank)
         return([square, self.symbol])
 
-    def move(self, File, Rank):
-        self.File = File
-        self.Rank = Rank
+    def move(self, filerank):
+        self.File = filerank[0]
+        self.Rank = filerank[1]
 
     def filerank(self):
         return((self.File, self.Rank))
@@ -46,9 +47,9 @@ class King(Piece):
         else:
             self.symbol = '!'
 
-    def move(self, File, Rank):
+    def move(self, filerank):
         self.HasMoved = True
-        Piece.move(self, File, Rank)
+        Piece.move(self, filerank)
 
 class Queen(Piece):
     def __init__(self, File, Rank, color):
@@ -73,9 +74,9 @@ class Rook(Piece):
         else:
             self.symbol = '!'
 
-    def move(self, File, Rank):
+    def move(self, filerank):
         self.HasMoved = True
-        Piece.move(self, File, Rank)
+        Piece.move(self, filerank)
 
 class Bishop(Piece):
     def __init__(self, File, Rank, color):
