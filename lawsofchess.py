@@ -29,6 +29,12 @@ class Piece:
     def filerank(self):
         return((self.File, self.Rank))
 
+    def colorchooser(self, whiteblackfilerank):
+        if color = 'white':
+            return(whiteblackfilerank)
+        elif color = 'black':
+            return([whiteblackfilerank[1], whiteblackfilerank[0]])
+
     def __str__(self):
         return(self.color + ' ' + self.kind + ' at ' + self.location()[0])
 
@@ -159,4 +165,14 @@ class Board:
         for piece in self.pieces:
             returnlist.append(piece.location())
         return(returnlist)
+    
+    def whiteblackfilerank(self):
+        whitefileranks = []
+        blackfileranks = []
+        for piece in self.pieces:
+            if piece.color == 'white':
+                whitefileranks.append(piece.filerank())
+            elif piece.color == 'black':
+                blackfileranks.append(piece.filerank())
+        return([whitefileranks, blackfileranks])
     
