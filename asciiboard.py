@@ -41,6 +41,29 @@ def printboard(piecelist):
                 print(rankstr)
                 rankstr = ""
 
+def fancyboard(piecelist):
+    fancypieces = [
+        ('K', '♔'),
+        ('Q', '♕'),
+        ('R', '♖'),
+        ('B', '♗'),
+        ('N', '♘'),
+        ('P', '♙'),
+        ('k', '♚'),
+        ('q', '♛'),
+        ('r', '♜'),
+        ('b', '♝'),
+        ('n', '♞'),
+        ('p', '♟')]
+    fancylist = []
+    for piece in piecelist:
+        square = piece[0]
+        for pair in fancypieces:
+            if pair[0] == piece[1]:
+                symbol = pair[1]
+        fancylist.append((square, symbol))
+    printboard(fancylist)
+
 initialposition = [
     ("a1", "R"),
     ("b1", "N"),
@@ -75,4 +98,4 @@ initialposition = [
     ("g7", "p"),
     ("h7", "p")]
 
-printboard(initialposition)
+
