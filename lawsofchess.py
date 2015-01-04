@@ -13,6 +13,7 @@ class Piece:
         self.Rank = Rank
         self.color = color
         self.symbol = '?'
+        self.kind = 'undefined'
 
     def location(self):
         square = ""
@@ -26,6 +27,12 @@ class Piece:
 
     def filerank(self):
         return((self.File, self.Rank))
+
+    def __str__(self):
+        return(self.color + ' ' + self.kind + ' at ' + self.location()[0])
+
+    def __repr__(self):
+        return(self.color + ' ' + self.kind + ' at ' + self.location()[0])
 
 class King(Piece):
     def __init__(self, File, Rank, color, HasMoved):
@@ -94,8 +101,8 @@ class Knight(Piece):
 
 class Pawn(Piece):
     def __init__(self, File, Rank, color):
-        self.kind = 'pawn'
         Piece.__init__(self, File, Rank, color)
+        self.kind = 'pawn'
         if self.color == 'white':
             self.symbol = 'P'
         elif self.color == 'black':
