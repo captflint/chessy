@@ -30,9 +30,9 @@ class Piece:
         return((self.File, self.Rank))
 
     def colorchooser(self, whiteblackfilerank):
-        if color = 'white':
+        if self.color == 'white':
             return(whiteblackfilerank)
-        elif color = 'black':
+        elif self.color == 'black':
             return([whiteblackfilerank[1], whiteblackfilerank[0]])
 
     def __str__(self):
@@ -56,6 +56,43 @@ class King(Piece):
     def move(self, filerank):
         self.HasMoved = True
         Piece.move(self, filerank)
+
+    def calcmoves(self, whiteblackfilerank):
+        fileranks = self.colorchooser(whiteblackfilerank)
+        possiblemoves = []
+        northmove = (self.File, self.Rank + 1)
+        if validsquare(northmove):
+            if northmove not in fileranks[0]:
+                possiblemoves.append(northmove)
+        northeastmove = (self.File + 1, self.Rank + 1)
+        if validsquare(northeastmove):
+            if northeastmove not in fileranks[0]:
+                possiblemoves.append(northeastmove)
+        eastmove = (self.File + 1, self.Rank)
+        if validsquare(eastmove):
+            if eastmove not in fileranks[0]:
+                possiblemoves.append(eastmove)
+        southeastmove = (self.File + 1, self.Rank - 1)
+        if validsquare(southeastmove):
+            if southeastmove not in fileranks[0]:
+                possiblemoves.append(southeastmove)
+        southmove = (self.File, self.Rank - 1)
+        if validsquare(southmove):
+            if southmove not in fileranks[0]:
+                possiblemoves.append(southmove)
+        southwestmove = (self.File - 1, self.Rank - 1)
+        if validsquare(southwestmove):
+            if southwestmove not in fileranks[0]:
+                possiblemoves.append(southwestmove)
+        westmove = (self.File - 1, self.Rank)
+        if validsquare(westmove):
+            if westmove not in fileranks[0]:
+                possiblemoves.append(westmove)
+        northwestmove = (self.File - 1, self.Rank + 1)
+        if validsquare(northwestmove):
+            if northwestmove not in fileranks[0]:
+                possiblemoves.append(northwestmove)
+        return(possiblemoves)
 
 class Queen(Piece):
     def __init__(self, File, Rank, color):
@@ -120,6 +157,13 @@ class Pawn(Piece):
 class Board:
     def __init__(self, starting_position):
         if starting_position == "initial":
+            self.WhiteToMove = True
+            self.plycount = 0
+            self.movenumber = 1
+            self.BlackCCastle = True
+            self.BlackGCastle = True
+            self.WhiteCCastle = True
+            self.WhiteGCastle = True
             self.pieces = []
             p =  King(5, 1, 'white', False)
             self.pieces.append(p)
@@ -159,6 +203,7 @@ class Board:
             for number in range(1, 9):
                 p =  Pawn(number, 7, 'black')
                 self.pieces.append(p)
+            self.repititionlist = []
 
     def piecepositions(self):
         returnlist = []
