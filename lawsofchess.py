@@ -162,6 +162,18 @@ class Rook(Piece):
         self.HasMoved = True
         Piece.move(self, filerank)
 
+    def calcmoves(self, whiteblackfilerank):
+        possiblemoves = []
+        # calculate north moves
+        possiblemoves += self.qrb(whiteblackfilerank, 0, 1)
+        # calculate east moves
+        possiblemoves += self.qrb(whiteblackfilerank, 1, 0)
+        # calculate south moves
+        possiblemoves += self.qrb(whiteblackfilerank, 0, -1)
+        # calculate west moves
+        possiblemoves += self.qrb(whiteblackfilerank, -1, 0)
+        return(possiblemoves)
+
 class Bishop(Piece):
     def __init__(self, File, Rank, color):
         Piece.__init__(self, File, Rank, color)
@@ -172,6 +184,18 @@ class Bishop(Piece):
             self.symbol = 'b'
         else:
             self.symbol = '!'
+
+    def calcmoves(self, whiteblackfilerank):
+        possiblemoves = []
+        # calculate northeast moves
+        possiblemoves += self.qrb(whiteblackfilerank, 1, 1)
+        # calculate southeast moves
+        possiblemoves += self.qrb(whiteblackfilerank, 1, -1)
+        # calculate southwest moves
+        possiblemoves += self.qrb(whiteblackfilerank, -1, -1)
+        # calculate northwest moves
+        possiblemoves += self.qrb(whiteblackfilerank, -1, 1)
+        return(possiblemoves)
 
 class Knight(Piece):
     def __init__(self, File, Rank, color):
