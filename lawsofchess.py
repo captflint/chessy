@@ -7,6 +7,28 @@ def validsquare(filerank):
     else:
         return(False)
 
+def square2filerank(square):
+    if square[0] == 'a':
+        File = 1
+    elif square[0] == 'b':
+        File = 2
+    elif square[0] == 'c':
+        File = 3
+    elif square[0] == 'd':
+        File = 4
+    elif square[0] == 'e':
+        File = 5
+    elif square[0] == 'f':
+        File = 6
+    elif square[0] == 'g':
+        File = 7
+    elif square[0] == 'h':
+        File = 8
+    return((File, int(square[1])))
+
+def filerank2square(filerank):
+    return('abcdefgh'[filerank[0] - 1] + str(filerank[1]))
+
 class Piece:
     def __init__(self, File, Rank, color):
         self.File = File
