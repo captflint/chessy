@@ -35,6 +35,27 @@ class Piece:
         elif self.color == 'black':
             return([whiteblackfilerank[1], whiteblackfilerank[0]])
 
+    def qrb(self, whiteblackfilerank, filedelta, rankdelta):
+        fileranks = self.colorchooser(whiteblackfilerank)
+        returnmoves = []
+        KeepGoing = True
+        fileoffset = filedelta
+        rankoffset = rankdelta
+        while KeepGoing:
+            candimove = (self.File + fileoffset, self.Rank + rankoffset)
+            if validsquare(candimove):
+                if candimove not in fileranks[0]:
+                    returnmoves.append(candimove)
+                else:
+                    KeepGoing = False
+                if candimove in fileranks[1]:
+                    KeepGoing = False
+                fileoffset += filedelta
+                rankoffset += rankdelta
+            else:
+                KeepGoing = False
+        return(returnmoves)
+
     def __str__(self):
         return(self.color + ' ' + self.kind + ' at ' + self.location()[0])
 
@@ -104,6 +125,26 @@ class Queen(Piece):
             self.symbol = 'q'
         else:
             self.symbol = '!'
+
+    def calcmoves(self, whiteblackfilerank):
+        possiblemoves = []
+        # calculate north moves
+        possiblemoves += self.qrb(whiteblackfilerank, 0, 1)
+        # calculate northeast moves
+        possiblemoves += self.qrb(whiteblackfilerank, 1, 1)
+        # calculate east moves
+        possiblemoves += self.qrb(whiteblackfilerank, 1, 0)
+        # calculate southeast moves
+        possiblemoves += self.qrb(whiteblackfilerank, 1, -1)
+        # calculate south moves
+        possiblemoves += self.qrb(whiteblackfilerank, 0, -1)
+        # calculate southwest moves
+        possiblemoves += self.qrb(whiteblackfilerank, -1, -1)
+        # calculate west moves
+        possiblemoves += self.qrb(whiteblackfilerank, -1, 0)
+        # calculate northwest moves
+        possiblemoves += self.qrb(whiteblackfilerank, -1, 1)
+        return(possiblemoves)
 
 class Rook(Piece):
     def __init__(self, File, Rank, color, HasMoved):
