@@ -245,7 +245,6 @@ class Knight(Piece):
                 possiblemoves.append(nnwmove)
         return(possiblemoves)
 
-
 class Pawn(Piece):
     def __init__(self, File, Rank, color):
         Piece.__init__(self, File, Rank, color)
@@ -256,6 +255,33 @@ class Pawn(Piece):
             self.symbol = 'p'
         else:
             self.symbol = '!'
+
+    def calcmoves(self, whiteblackfilerank, ep):
+        fileranks = self.colorchooser(whiteblackfilerank)
+        fileranks[1].append(ep)
+        possiblemoves = []
+        if self.color == 'white':
+            direction = 1
+            startrank = 2
+        else:
+            direction = -1
+            startrank = 7
+        oneforward = (self.File, self.Rank + direction)
+        if oneforward not in fileranks[0]:
+            if oneforward not in fileranks[1]:
+                possiblemoves.append(oneforward)
+        if len(possiblemoves) == 1 and self.Rank == startrank:
+            twoforward = (self.File, self.Rank + 2 * direction)
+            if twoforward not in fileranks[0]:
+                if twoforward not in fileranks[1]:
+                    possiblemoves.append(twoforward)
+        westcapture = (self.File - 1, self.Rank + direction)
+        if westcapture in fileranks[1]:
+            possiblemoves.append(westcapture)
+        eastcapture = (self.File + 1, self.Rank + direction)
+        if eastcapture in fileranks[1]:
+            possiblemoves.append(eastcapture)
+        return(possiblemoves)
 
 class Board:
     def __init__(self, starting_position):
