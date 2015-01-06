@@ -208,6 +208,44 @@ class Knight(Piece):
         else:
             self.symbol = '!'
 
+    def calcmoves(self, whiteblackfilerank):
+        fileranks = self.colorchooser(whiteblackfilerank)
+        possiblemoves = []
+        nnemove = (self.File + 1, self.Rank + 2)
+        if validsquare(nnemove):
+            if nnemove not in fileranks[0]:
+                possiblemoves.append(nnemove)
+        enemove = (self.File + 2, self.Rank + 1)
+        if validsquare(enemove):
+            if enemove not in fileranks[0]:
+                possiblemoves.append(enemove)
+        esemove = (self.File + 2, self.Rank - 1)
+        if validsquare(esemove):
+            if esemove not in fileranks[0]:
+                possiblemoves.append(esemove)
+        ssemove = (self.File + 1, self.Rank - 2)
+        if validsquare(ssemove):
+            if ssemove not in fileranks[0]:
+                possiblemoves.append(ssemove)
+        sswmove = (self.File - 1, self.Rank - 2)
+        if validsquare(sswmove):
+            if sswmove not in fileranks[0]:
+                possiblemoves.append(sswmove)
+        wswmove = (self.File - 2, self.Rank - 1)
+        if validsquare(wswmove):
+            if wswmove not in fileranks[0]:
+                possiblemoves.append(wswmove)
+        wnwmove = (self.File - 2, self.Rank + 1)
+        if validsquare(wnwmove):
+            if wnwmove not in fileranks[0]:
+                possiblemoves.append(wnwmove)
+        nnwmove = (self.File - 1, self.Rank + 2)
+        if validsquare(nnwmove):
+            if nnwmove not in fileranks[0]:
+                possiblemoves.append(nnwmove)
+        return(possiblemoves)
+
+
 class Pawn(Piece):
     def __init__(self, File, Rank, color):
         Piece.__init__(self, File, Rank, color)
@@ -285,4 +323,3 @@ class Board:
             elif piece.color == 'black':
                 blackfileranks.append(piece.filerank())
         return([whitefileranks, blackfileranks])
-    
