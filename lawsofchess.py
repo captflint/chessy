@@ -306,15 +306,17 @@ class Pawn(Piece):
         return(possiblemoves)
 
 class Board:
-    def __init__(self, starting_position):
-        if starting_position == "initial":
+    def __init__(self, starting_position, chess960=False):
+        self.chess960 = chess960
+        if starting_position == "initial" and not chess960:
             self.WhiteToMove = True
             self.plycount = 0
             self.movenumber = 1
-            self.BlackCCastle = True
-            self.BlackGCastle = True
-            self.WhiteCCastle = True
-            self.WhiteGCastle = True
+            self.BlackWestCastle = True
+            self.BlackEastCastle = True
+            self.WhiteWestCastle = True
+            self.WhiteEastCastle = True
+            self.enpasant = (0, 0)
             self.pieces = []
             p =  King(5, 1, 'white', False)
             self.pieces.append(p)
@@ -371,3 +373,22 @@ class Board:
             elif piece.color == 'black':
                 blackfileranks.append(piece.filerank())
         return([whitefileranks, blackfileranks])
+
+    def getoneplymoves(self):
+        position = self.whiteblackfilerank()
+        ep = self.enpasant
+        oneplymoves = []
+        if self.WhiteToMove:
+            colortomove = 'white'
+        else:
+            colortomove = 'black'
+        for piece in self.pieces:
+            if piece.color == colortomove:
+                origin = (piece.File, piece.Rank)
+                if piece.kind == 'pawn':
+                    destinations = piece.calcmoves(position, ep)
+                else:
+                    destinations = piece.calcmoves(position)
+                if len(destinations) > 0:
+                    oneplymoves.append([origin, destinations])
+        return(oneplymoves)
