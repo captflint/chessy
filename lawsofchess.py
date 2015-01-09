@@ -374,14 +374,15 @@ class Board:
                 blackfileranks.append(piece.filerank())
         return([whitefileranks, blackfileranks])
 
-    def getoneplymoves(self):
+    def getoneplymoves(self, colortomove=''):
         position = self.whiteblackfilerank()
         ep = self.enpasant
         oneplymoves = []
-        if self.WhiteToMove:
-            colortomove = 'white'
-        else:
-            colortomove = 'black'
+        if len(colortomove) == 0:
+            if self.WhiteToMove:
+                colortomove = 'white'
+            else:
+                colortomove = 'black'
         for piece in self.pieces:
             if piece.color == colortomove:
                 origin = (piece.File, piece.Rank)
@@ -392,3 +393,135 @@ class Board:
                 if len(destinations) > 0:
                     oneplymoves.append([origin, destinations])
         return(oneplymoves)
+
+    def getcastlemoves(self):
+        castlemoves = []
+        if self.WhiteToMove:
+            colortomove = 'white'
+            attackcolor = 'black'
+            castlerank = 1
+            eastcastle = self.WhiteEastCastle
+            westcastle = self.WhiteWestCastle
+        else:
+            colortomove = 'black'
+            attackcolor = 'white'
+            castlerank = 8
+            eastcastle = self.BlackEastCastle
+            westcastle = self.BlackWestCastle
+        if eastcastle or westcastle:
+            attackedsquares = []
+            for piecemoves in self.getoneplymoves(colortomove=attackcolor):
+                attackedsquares += piecemoves[1]
+            for piece in self.pieces:
+                if piece.kind == 'king' and piece.color == colortomove:
+                    king = piece
+            if king.HasMoved:
+                eastcastle = False
+                westcastle = False
+                if self.WhiteToMove:
+                    self.WhiteEastCastle = False
+                    self.WhiteWestCastle = False
+                else:
+                    self.BlackEastCastle = False
+                    self.BlackWestCastle = False
+                return("")
+            for piece in self.pieces:
+                if eastcastle:
+                    if piece.kind == 'rook' and piece.color == colortomove:
+                        if piece.File < king.File:
+                            eastrook = piece
+                if westcastle:
+                    if piece.kind == 'rook' and piece.color == colortomove:
+                        if piece.File > king.File:
+                            westrook = piece
+            if eastrook.HasMoved:
+                eastcastle = False
+                if self.WhiteToMove:
+                    self.WhiteEastCastle = False
+                else:
+                    self.BlackEastCastle = False
+            if westrook.HasMoved:
+                westcastle = False
+                if self.WhiteToMove:
+                    self.WhiteWestCastle = False
+                else:
+                    self.BlackWestCastle = False
+            if eastcastle:
+                allowedpieces = [king.filerank(), eastrook.filerank()]
+                kingpath = []
+                rookpath = []
+                if king.filerank() == (3, castlerank):
+                    kingpath.append(king.filerank())
+                if len(kingpath) == 0:
+                    if king.File > 3:
+                        pathrange = range(3, king.File + 1)
+                    else:
+                        pathrange = range(king.File, 4)
+                    for filenumber in pathrange:
+                        kingpath.append((filenumber, castlerank))
+                if eastrook.filerank() == (4, castlerank):
+                    rookpath.append(eastrook.filerank())
+                if len(rookpath) == 0:
+                    if eastrook.File > 4:
+                        pathrange = range(4, eastrook.File + 1)
+                    else:
+                        pathrange = range(eastrook.File, 5)
+                    for filenumber in pathrange:
+                        rookpath.append((filenumber, castlerank))
+                keepgoing = True
+                for path in [kingpath, rookpath]:
+                    for piece in self.pieces:
+                        if piece.filerank() in path and piece not in allowedpieces:
+                            keepgoing = False
+                if keepgoing:
+                    for square in kingpath:
+                        if square in attackedsquares:
+                            keepgoing = False
+                if keepgoing:
+                    if self.chess960:
+                        cmove = filerank2square(king.filerank())
+                        cmove += filerank2square(eastrook.filerank())
+                        castlemoves.append(cmove)
+                    else:
+                        castlemoves.append('e1c1')
+            if westcastle:
+                allowedpieces = [king.filerank(), westrook.filerank()]
+                kingpath = []
+                rookpath = []
+                if king.filerank() == (7, castlerank):
+                    kingpath.append(king.filerank())
+                if len(kingpath) == 0:
+                    if king.File > 7:
+                        pathrange = range(1, king.File + 1)
+                    else:
+                        pathrange = range(king.File, 8)
+                    for filenumber in pathrange:
+                        kingpath.append((filenumber, castlerank))
+                if westrook.filerank() == (6, castlerank):
+                    rookpath.append(westrook.filerank())
+                if len(rookpath) == 0:
+                    if westrook.File > 6:
+                        pathrange = range(6, westrook.File + 1)
+                    else:
+                        pathrange = range(westrook.File, 7)
+                    for filenumber in pathrange:
+                        rookpath.append((filenumber, castlerank))
+                keepgoing = True
+                for path in [kingpath, rookpath]:
+                    for piece in self.pieces:
+                        if piece.filerank() in path and piece not in allowedpieces:
+                            keepgoing = False
+                if keepgoing:
+                    for square in kingpath:
+                        if square in attackedsquares:
+                            keepgoing = False
+                if keepgoing:
+                    if self.chess960:
+                        cmove = filerank2square(king.filerank())
+                        cmove += filerank2square(westrook.filerank())
+                        castlemoves.append(cmove)
+                    else:
+                        castlemoves.append('e1g1')
+            return(castlemoves)
+        else:
+            return([])
