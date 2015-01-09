@@ -312,6 +312,9 @@ class Board:
             self.WhiteToMove = True
             self.plycount = 0
             self.movenumber = 1
+            self.fiftymoverule = 0
+            self.termination = "-"
+            self.score = "*"
             self.BlackWestCastle = True
             self.BlackEastCastle = True
             self.WhiteWestCastle = True
@@ -569,3 +572,57 @@ class Board:
                     legalmoves.append(origin + filerank2square(move))
         legalmoves += self.getcastlemoves()
         return(legalmoves)
+
+    def genfen(self):
+        File = 1
+        Rank = 8
+        fen = ""
+        blanksquares = 0
+        while Rank > 0:
+            while File < 9:
+                blanksquare = True
+                for piece in self.pieces:
+                    if piece.filerank() == (File, Rank):
+                        blanksquare = False
+                        if blanksquares > 0:
+                            fen += str(blanksquares)
+                            blanksquares = 0
+                        fen += piece.symbol
+                File += 1
+                if blanksquare:
+                    blanksquares += 1
+            if blanksquares > 0:
+                fen += str(blanksquares)
+                blanksquares = 0
+            if Rank > 1:
+                fen += '/'
+            Rank -= 1
+            File = 1
+        if self.WhiteToMove:
+            fen += " w "
+        else:
+            fen += " b "
+        if self.WhiteWestCastle:
+            fen += 'K'
+        if self.WhiteEastCastle:
+            fen += 'Q'
+        if self.BlackWestCastle:
+            fen += 'k'
+        if self.BlackEastCastle:
+            fen += 'q'
+        fen += ' '
+        if self.enpasant == (0, 0):
+            fen += '-'
+        else:
+            fen += filerank2square(self.enpasant)
+        fen += ' '
+        fen += str(self.fiftymoverule)
+        fen += ' '
+        fen += str(self.movenumber)
+        return(fen)
+
+    def __str__(self):
+        return(self.genfen())
+
+    def __repr__(self):
+        return("Chess game: " + self.genfen())
