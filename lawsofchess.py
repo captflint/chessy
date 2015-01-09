@@ -357,6 +357,7 @@ class Board:
                 p =  Pawn(number, 7, 'black')
                 self.pieces.append(p)
             self.repititionlist = []
+            self.legalmoves = self.getlegalmoves()
 
     def piecepositions(self):
         returnlist = []
@@ -374,11 +375,14 @@ class Board:
                 blackfileranks.append(piece.filerank())
         return([whitefileranks, blackfileranks])
 
-    def getoneplymoves(self, colortomove=''):
+    def getoneplymoves(self, hypoposition='', colortomove=''):
         position = self.whiteblackfilerank()
-        ep = self.enpasant
+        if len(hypoposition) > 0:
+            position = hypoposition
+        ep = (0, 0)
         oneplymoves = []
         if len(colortomove) == 0:
+            ep = self.enpasant
             if self.WhiteToMove:
                 colortomove = 'white'
             else:
@@ -525,3 +529,43 @@ class Board:
             return(castlemoves)
         else:
             return([])
+
+    def gametermination(state):
+        pass
+
+    def getlegalmoves(self):
+        if self.WhiteToMove:
+            colortomove = 'white'
+            attackcolor = 'black'
+        else:
+            colortomove = 'black'
+            attackcolor = 'white'
+        legalmoves = []
+        candimoves = self.getoneplymoves()
+        position = self.piecepositions()
+        for piece in self.pieces:
+            if piece.kind == 'king' and piece.color == colortomove:
+                kingfilerank = piece.filerank()
+        if self.WhiteToMove:
+            movingpieces = position[0]
+            replypieces = position[1]
+        else:
+            movingpieces = position[1]
+            replypieces = position[0]
+        for moveset in candimoves:
+            origin = filerank2square(moveset[0])
+            for move in moveset[1]:
+                hypoposition = []
+                for p in movingpieces:
+                    if p == moveset[0]:
+                        hypoposition.append(move)
+                    else:
+                        hypoposition.append(p)
+                if self.WhiteToMove:
+                    replymoves = self.getoneplymoves(hypoposition=[hypoposition, replypieces], colortomove=attackcolor)
+                else:
+                    replymoves = self.getoneplymoves(hypoposition=[replypieces, hypoposition], colortomove=attackcolor)
+                if kingfilerank not in replymoves:
+                    legalmoves.append(origin + filerank2square(move))
+        legalmoves += self.getcastlemoves()
+        return(legalmoves)
