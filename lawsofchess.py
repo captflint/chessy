@@ -319,7 +319,7 @@ class Board:
             self.BlackEastCastle = True
             self.WhiteWestCastle = True
             self.WhiteEastCastle = True
-            self.enpasant = (0, 0)
+            self.enpassant = (0, 0)
             self.pieces = []
             p =  King(5, 1, 'white', False)
             self.pieces.append(p)
@@ -385,7 +385,7 @@ class Board:
         ep = (0, 0)
         oneplymoves = []
         if len(colortomove) == 0:
-            ep = self.enpasant
+            ep = self.enpassant
             if self.WhiteToMove:
                 colortomove = 'white'
             else:
@@ -533,7 +533,7 @@ class Board:
         else:
             return([])
 
-    def gametermination(state):
+    def gametermination(self):
         pass
 
     def getlegalmoves(self):
@@ -611,10 +611,10 @@ class Board:
         if self.BlackEastCastle:
             fen += 'q'
         fen += ' '
-        if self.enpasant == (0, 0):
+        if self.enpassant == (0, 0):
             fen += '-'
         else:
-            fen += filerank2square(self.enpasant)
+            fen += filerank2square(self.enpassant)
         fen += ' '
         fen += str(self.fiftymoverule)
         fen += ' '
@@ -626,3 +626,76 @@ class Board:
 
     def __repr__(self):
         return("Chess game: " + self.genfen())
+
+    def move(self, moveselection):
+        if move not in self.legalmoves:
+            return(False)
+        self.plycounter += 1
+        self.fiftymoverule += 1
+        origin = moveselection[0:2]
+        target = moveselection[2:]
+        if self.WhiteToMove:
+            colortomove = 'white'
+            pawnstartrank = 2
+            pawndoublerank = 4
+            pawneprank = 3
+            eastcastle = self.WhiteEastCastle
+            westcastle = self.WhiteWestCastle
+        else:
+            colortomove = 'black'
+            pawnstartrank = 7
+            pawndoublerank = 5
+            pawneprank = 6
+            eastcastle = self.BlackEastCastle
+            westcastle = self.BlackWestCastle
+            self.movenumber += 1
+        originfilerank = square2filerank(origin)
+        targetfilerank = square2filerank(target)
+        index = 0
+        capturedpiece = 'none'
+        while index != len(self.pieces):
+            evalpiece = self.pieces[index]
+            if evalpiece.filerank() == originfilerank:
+                movingpiece = evalpiece
+            if evalpiece.filerank() == targetfilerank and evalpiece.color != colortomove:
+                capturedpiece = index
+            index += 1
+        if capturedpiece != 'none':
+            del(self.pieces[capturedpiece])
+            self.fiftymoverule = 0
+        if movingpiece.kind == 'pawn':
+            self.fiftymoverule = 0
+            if originfilerank[1] == pawnstartrank and targetfilerank[1] == pawndoublerank:
+                self.enpassant = (movingpiece.File, pawneprank)
+        if movingpiece.kind = 'king':
+            kingmove = True
+        else:
+            kingmove = False
+        if kingmove:
+            if eastcastle:
+                for piece in self.pieces:
+                    if piece.kind = 'rook' and piece.color == colortomove and piece.File < movingpiece.File:
+                        eastrook = piece
+                if self.chess960:
+                    castletarget = eastrook.filerank()
+                else:
+                    castletarget = (3, 1)
+                if targetfilerank == castletarget:
+                    targetfilerank = (3, 1)
+                    eastrook.move (4, 1)
+            if westcastle:
+                for piece in self.pieces:
+                    if piece.kind = 'rook' and piece.color == colortomove and piece.File > movingpiece.File:
+                        westrook = piece
+                if self.chess960:
+                    castletarget = westrook.filerank()
+                else:
+                    castletarget = (7, 1)
+                if targetfilerank == castletarget:
+                    targetfilerank = (7, 1)
+                    westrook.move (6, 1)
+        movingpiece.move(targetfilerank)
+        self.WhiteToMove = not self.WhiteToMove
+        self.legelmoves = self.getlegalmoves()
+        self.termination = self.gametermination()
+        return(True)
