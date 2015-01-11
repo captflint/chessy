@@ -534,7 +534,34 @@ class Board:
             return([])
 
     def gametermination(self):
-        pass
+        if self.WhiteToMove:
+            colortomove = 'white'
+            attackcolor = 'black'
+            matescore = '0-1'
+        else:
+            colortomove = 'black'
+            attackcolor = 'white'
+            matescore = '1-0'
+        if len(self.legalmoves) == 0:
+            for piece in self.pieces:
+                if piece.kind == 'king' and piece.color == colortomove:
+                    king = piece
+            attacks = self.getoneplymoves(attackcolor)
+            if king.filerank in attacks:
+                self.score = matescore
+                return('checkmate')
+            else:
+                self.score = '1/2-1/2'
+                return('stalemate')
+        if self.fiftymoverule == 100:
+            self.score = '1/2-1/2'
+            return('50 move rule')
+        fenstring = self.genfen()
+        if self.repititionlist.count(fenstring) == 2:
+            self.score = '1/2-1/2'
+            return('three repititions')
+        else:
+            self.repititionlist.append(fenstring)
 
     def getlegalmoves(self):
         if self.WhiteToMove:
@@ -667,14 +694,14 @@ class Board:
             self.fiftymoverule = 0
             if originfilerank[1] == pawnstartrank and targetfilerank[1] == pawndoublerank:
                 self.enpassant = (movingpiece.File, pawneprank)
-        if movingpiece.kind = 'king':
+        if movingpiece.kind == 'king':
             kingmove = True
         else:
             kingmove = False
         if kingmove:
             if eastcastle:
                 for piece in self.pieces:
-                    if piece.kind = 'rook' and piece.color == colortomove and piece.File < movingpiece.File:
+                    if piece.kind == 'rook' and piece.color == colortomove and piece.File < movingpiece.File:
                         eastrook = piece
                 if self.chess960:
                     castletarget = eastrook.filerank()
@@ -685,7 +712,7 @@ class Board:
                     eastrook.move (4, 1)
             if westcastle:
                 for piece in self.pieces:
-                    if piece.kind = 'rook' and piece.color == colortomove and piece.File > movingpiece.File:
+                    if piece.kind == 'rook' and piece.color == colortomove and piece.File > movingpiece.File:
                         westrook = piece
                 if self.chess960:
                     castletarget = westrook.filerank()
